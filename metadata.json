@@ -1,0 +1,6 @@
+{
+  "name": "Mandela Connect Layer — Telecom Core (SBC, IVR, SMS & NMS)",
+  "description": "Pan-African Telecom Infrastructure: System 4 (Carrier-Grade SBC & Anycast SIP Core), System 3 (Voice & IVR for 50 African Languages), System 2 (Messaging Gateway: 98% Delivery), and System 1 (Number Management).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

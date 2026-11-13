@@ -1,0 +1,886 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mandela Core — Machine-Readable Module Registry",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-21T13:52:00Z",
+  "auditedBy": [
+    "Chief Technology Officer",
+    "Principal Software Architect",
+    "Senior Full-Stack Engineer",
+    "Platform Infrastructure Engineer",
+    "Security and Identity Architect",
+    "Product Experience Architect",
+    "Billing and Monetization Engineer",
+    "Site Reliability Engineer",
+    "QA and Test Automation Lead"
+  ],
+  "modules": [
+    {
+      "moduleId": "mod-connect-sbc-01",
+      "productDivision": "MANDELA CONNECT",
+      "displayName": "Session Border Controller (SBC) Core & Anycast SIP Cluster",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/sbc/SbcNocDashboard.tsx",
+        "/src/components/sbc/PbxConnectWizard.tsx",
+        "/src/components/sbc/SipLadderTraces.tsx",
+        "/src/components/sbc/HeaderRulesEditor.tsx",
+        "/src/components/sbc/SecurityAiEngine.tsx",
+        "/src/components/sbc/PacketDiagnosticModal.tsx",
+        "/src/types/sbc.ts",
+        "/src/data/mockSbcData.ts"
+      ],
+      "frontEndRoute": "/enterprise/sbc_core",
+      "backendService": "Express server.ts (Kamailio 5.7 / FreeSWITCH 1.10 proxy simulation)",
+      "apiEndpoints": [
+        "POST /api/sbc/traces",
+        "POST /api/sbc/header-rules",
+        "POST /api/sbc/packet-diagnostic/capture",
+        "POST /api/sbc/pop/drain",
+        "POST /api/sbc/pop/scale"
+      ],
+      "databaseOwnership": "SBC State Store (Redis Cluster / PostgreSQL SIP Traces)",
+      "tenantScope": "Multi-Tenant with isolated IP ACLs, CPS quotas, and credential realms",
+      "userRoles": [
+        "Communications Administrator",
+        "Carrier Operations Specialist",
+        "Telecom Customer Administrator"
+      ],
+      "permissions": [
+        "connect.sbc.read",
+        "connect.sbc.configure",
+        "connect.sbc.drain",
+        "connect.sbc.packet_capture"
+      ],
+      "requiredEntitlement": "entitlement.connect.sbc_carrier_grade",
+      "humanApprovals": [
+        "PoP drain and regional traffic offload > 2,000 CPS",
+        "Global ACL wildcard prefix blocks (/16 or larger)"
+      ],
+      "dependencies": [
+        "RTPEngine",
+        "Kamailio Anycast",
+        "FreeSWITCH Core",
+        "BGP Anycast Route Reflectors"
+      ],
+      "observabilityStatus": "PARTIAL (In-memory Prometheus counters, live SIP ladder visualization)",
+      "testCoverage": "35% (Component render tests, mock state simulation)",
+      "knownSecurityGaps": "Client-side state manipulation can spoof PoP health; packet capture lacks tenant-level payload masking",
+      "recommendedRemediation": "Implement server-enforced eBPF ring buffers with tokenized PCAP export and mTLS trunk verification"
+    },
+    {
+      "moduleId": "mod-connect-interconnect-02",
+      "productDivision": "MANDELA CONNECT",
+      "displayName": "Carrier Interconnect & Least-Cost Routing (LCRq)",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/interconnect/RateDeckManager.tsx",
+        "/src/components/interconnect/LcrRoutingEngine.tsx",
+        "/src/components/interconnect/CdrMediationStream.tsx",
+        "/src/types/interconnect.ts",
+        "/src/data/mockInterconnectData.ts"
+      ],
+      "frontEndRoute": "/enterprise/interconnect",
+      "backendService": "Interconnect Mediation Engine (Kafka stream simulation)",
+      "apiEndpoints": [
+        "POST /api/interconnect/rate-decks/upload",
+        "GET /api/interconnect/routes",
+        "POST /api/interconnect/routes/override",
+        "GET /api/interconnect/cdrs/stream"
+      ],
+      "databaseOwnership": "Rate Deck Engine (ClickHouse CDR Lakehouse / PostgreSQL)",
+      "tenantScope": "Multi-Tenant wholesale partitions with bilateral tariff agreements",
+      "userRoles": [
+        "Carrier Operations Specialist",
+        "Billing and Settlement Specialist",
+        "Network Operations Engineer"
+      ],
+      "permissions": [
+        "connect.interconnect.read",
+        "connect.interconnect.ratedeck_upload",
+        "connect.interconnect.route_override",
+        "connect.interconnect.cdr_export"
+      ],
+      "requiredEntitlement": "entitlement.connect.wholesale_lcr",
+      "humanApprovals": [
+        "Manual rate deck margin override < 5%",
+        "Carrier quarantine / bilateral trunk isolation"
+      ],
+      "dependencies": [
+        "Kafka CDR Ingestion",
+        "Carrier SS7/SIGTRAN Gateways",
+        "Equiano/WACS BGP Links"
+      ],
+      "observabilityStatus": "PARTIAL (Simulated real-time throughput and margin drift alerts)",
+      "testCoverage": "28% (Static rate deck calculations)",
+      "knownSecurityGaps": "CSV rate deck parser vulnerable to injection without server schema validation; unvalidated tariff changes",
+      "recommendedRemediation": "Add server-side rate deck cryptographic signing, schema validation, and two-person rule for tariff updates"
+    },
+    {
+      "moduleId": "mod-connect-voice-03",
+      "productDivision": "MANDELA CONNECT",
+      "displayName": "Consumer Voice & 50 African Languages IVR",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/voice/VoiceNocDashboard.tsx",
+        "/src/components/voice/IvrFlowBuilder.tsx",
+        "/src/components/voice/LiveCallSimulator.tsx",
+        "/src/components/voice/AfricanLanguagesMatrix.tsx",
+        "/src/components/voice/CallSummariesView.tsx",
+        "/src/types/voice.ts",
+        "/src/data/mockVoiceData.ts"
+      ],
+      "frontEndRoute": "/enterprise/voice_ivr",
+      "backendService": "FreeSWITCH Media Cluster + Local Neural ASR/TTS Engine",
+      "apiEndpoints": [
+        "POST /api/voice/ivr-flows",
+        "POST /api/voice/simulate-call",
+        "GET /api/voice/languages",
+        "GET /api/voice/cdrs"
+      ],
+      "databaseOwnership": "Media & IVR Configuration (PostgreSQL / Object Storage for Audio)",
+      "tenantScope": "Tenant-isolated IVR trees, localized acoustic models, and audio recordings",
+      "userRoles": [
+        "Communications Developer",
+        "Communications Administrator",
+        "Customer Support Agent"
+      ],
+      "permissions": [
+        "connect.voice.read",
+        "connect.voice.flow_edit",
+        "connect.voice.call_dispatch",
+        "connect.voice.recording_access"
+      ],
+      "requiredEntitlement": "entitlement.connect.multilingual_ivr",
+      "humanApprovals": [
+        "Emergency broadcast IVR hotline deployment to national prefixes",
+        "Bulk voice call dispatch > 10,000 concurrent calls"
+      ],
+      "dependencies": [
+        "FreeSWITCH ESL",
+        "Neural Speech Models (Swahili, Yoruba, Amharic, Zulu, Hausa)",
+        "Opus/G.711 Codec Engine"
+      ],
+      "observabilityStatus": "PARTIAL (In-app MOS score, simulated audio waveform, packet loss monitor)",
+      "testCoverage": "40% (Flow builder state tests, language selector unit tests)",
+      "knownSecurityGaps": "Call recordings and transcripts are accessible on client without ABAC data masking; PII in audio logs",
+      "recommendedRemediation": "Implement purpose-bound audio decryption keys, biometric voice token redaction, and strict tenant RBAC"
+    },
+    {
+      "moduleId": "mod-connect-messaging-04",
+      "productDivision": "MANDELA CONNECT",
+      "displayName": "Sovereign SMS & USSD Messaging Gateway",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/messaging/NocDashboard.tsx",
+        "/src/components/messaging/CampaignDispatcher.tsx",
+        "/src/components/messaging/FeaturePhoneUssdSimulator.tsx",
+        "/src/components/messaging/SmppBindMonitor.tsx",
+        "/src/components/messaging/RoutingEngineView.tsx",
+        "/src/components/messaging/MessagingApiExplorer.tsx",
+        "/src/types/messaging.ts",
+        "/src/data/mockMessagingData.ts"
+      ],
+      "frontEndRoute": "/enterprise/messaging_sms",
+      "backendService": "SMPP v5 / SIGTRAN USSD Server Gateway",
+      "apiEndpoints": [
+        "POST /v1/sms/send",
+        "POST /v1/ussd/session",
+        "GET /v1/smpp/binds",
+        "POST /v1/campaigns/dispatch"
+      ],
+      "databaseOwnership": "Message Store & Queue (RabbitMQ / Redis / PostgreSQL)",
+      "tenantScope": "Tenant-isolated bind credentials, sender IDs, and USSD shortcode allocations",
+      "userRoles": [
+        "Communications Developer",
+        "Customer Support Agent",
+        "Carrier Operations Specialist",
+        "Fraud Analyst"
+      ],
+      "permissions": [
+        "connect.messaging.send",
+        "connect.messaging.campaign_manage",
+        "connect.messaging.smpp_inspect",
+        "connect.messaging.ussd_configure"
+      ],
+      "requiredEntitlement": "entitlement.connect.tier1_smpp",
+      "humanApprovals": [
+        "Alphanumeric Sender ID registration with national regulators (e.g. NCC, CA)",
+        "Bulk campaign broadcast > 100,000 recipients"
+      ],
+      "dependencies": [
+        "Tier-1 MNO SMPP Binds",
+        "SIGTRAN SS7 (M3UA/SCCP/TCAP)",
+        "GSM 03.38 / UCS-2 Encoders"
+      ],
+      "observabilityStatus": "MODERATE (PDU traces, DLR state trackers, TPS gauges)",
+      "testCoverage": "45% (USSD state tree simulation, message encoding validation)",
+      "knownSecurityGaps": "Client can simulate OTP dispatch without spending authorization; alphanumeric sender IDs not verified against regulatory whitelist",
+      "recommendedRemediation": "Enforce server-side prepaid credit / quota deduction prior to queue dispatch; regulatory KYC binding for Sender IDs"
+    },
+    {
+      "moduleId": "mod-telecom-nms-05",
+      "productDivision": "MANDELA TELECOM",
+      "displayName": "Sovereign Number Management System (NMS)",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/CommandControlMap.tsx",
+        "/src/components/InventoryBrowser.tsx",
+        "/src/components/MyNumbersView.tsx",
+        "/src/components/NumberProvisionModal.tsx",
+        "/src/components/AiForecastModal.tsx",
+        "/src/types/nms.ts",
+        "/src/data/mockData.ts",
+        "/server.ts (/api/nms-forecast)"
+      ],
+      "frontEndRoute": "/enterprise/nms_numbers",
+      "backendService": "Express server.ts + Regulatory Connector APIs",
+      "apiEndpoints": [
+        "POST /api/nms-forecast",
+        "POST /v1/numbers/reserve",
+        "POST /v1/numbers/provision",
+        "GET /v1/numbers/inventory",
+        "POST /v1/numbers/release"
+      ],
+      "databaseOwnership": "National Numbering Plan DB (PostgreSQL E.164 Catalog)",
+      "tenantScope": "Multi-Tenant DID allocations with sovereign country regulatory boundaries",
+      "userRoles": [
+        "Number Inventory Manager",
+        "Telecom Customer Administrator",
+        "Regulatory Approver",
+        "Carrier Operations Specialist"
+      ],
+      "permissions": [
+        "telecom.numbers.read",
+        "telecom.numbers.reserve",
+        "telecom.numbers.provision",
+        "telecom.numbers.recycle"
+      ],
+      "requiredEntitlement": "entitlement.telecom.did_sovereign_pool",
+      "humanApprovals": [
+        "High-risk number block allocation (Golden/Shortcode numbers)",
+        "Cross-border number assignment exceptions"
+      ],
+      "dependencies": [
+        "National Regulatory Authorities (NCC, CA, ICASA, ARCEP, TRA)",
+        "Gemini 3.8 Flash AI Forecasting",
+        "GSMA PRD IR.21"
+      ],
+      "observabilityStatus": "PARTIAL (Stockout risk scores, live inventory counts, AI forecast models)",
+      "testCoverage": "50% (Inventory search, reservation workflows)",
+      "knownSecurityGaps": "Client-side number assignment bypasses payment transaction verification in test UI",
+      "recommendedRemediation": "Enforce two-phase commit reservation with Stripe/Mobile Money payment confirmation before DID lease activation"
+    },
+    {
+      "moduleId": "mod-telecom-porting-06",
+      "productDivision": "MANDELA TELECOM",
+      "displayName": "Mobile Number Portability (MNP) Clearinghouse",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/PortingEngine.tsx",
+        "/src/types/nms.ts",
+        "/src/data/mockData.ts"
+      ],
+      "frontEndRoute": "/enterprise/nms_numbers?tab=porting",
+      "backendService": "MNP Clearinghouse Gateway Simulator",
+      "apiEndpoints": [
+        "POST /v1/porting/request",
+        "GET /v1/porting/status/:id",
+        "POST /v1/porting/approve",
+        "POST /v1/porting/reject"
+      ],
+      "databaseOwnership": "Porting State Ledger (PostgreSQL / Regulatory Clearinghouse sync)",
+      "tenantScope": "Donor and Recipient carrier tenant isolation",
+      "userRoles": [
+        "Porting Specialist",
+        "Regulatory Approver",
+        "Telecom Customer Administrator"
+      ],
+      "permissions": [
+        "telecom.porting.request",
+        "telecom.porting.review",
+        "telecom.porting.approve",
+        "telecom.porting.escalate"
+      ],
+      "requiredEntitlement": "entitlement.telecom.mnp_clearinghouse",
+      "humanApprovals": [
+        "Donor telco dispute resolution",
+        "Sovereign regulator porting timeout override"
+      ],
+      "dependencies": [
+        "Central Order Routing Database (CRDB)",
+        "National Clearinghouse APIs",
+        "SS7 MAP SendRoutingInfo"
+      ],
+      "observabilityStatus": "MODERATE (Stepped workflow progress, SLA countdown timers)",
+      "testCoverage": "38% (Simulated porting states)",
+      "knownSecurityGaps": "Donor verification is simulated client-side; lacking donor subscriber SMS consent validation",
+      "recommendedRemediation": "Implement automated donor two-way SMS OTP confirmation (*242#) before porting execution"
+    },
+    {
+      "moduleId": "mod-telecom-esim-07",
+      "productDivision": "MANDELA TELECOM",
+      "displayName": "GSMA SGP.22 eSIM & eUICC Cryptographic Attestation",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/EsimAttestationDashboard.tsx",
+        "/src/components/dataverse/EuiccQrScannerModal.tsx",
+        "/src/components/dataverse/HardwareAttestationAudit.tsx",
+        "/src/components/edge/EuiccAttestationMiddlewareView.tsx",
+        "/src/services/euiccAttestationService.ts",
+        "/src/types/nms.ts",
+        "/src/types/dataverse.ts"
+      ],
+      "frontEndRoute": "/enterprise/nms_numbers?tab=esim_attestation",
+      "backendService": "SM-DP+ / SM-DS GSMA SGP.22 Service",
+      "apiEndpoints": [
+        "POST /api/esim/generate-profile",
+        "POST /api/esim/verify-attestation",
+        "GET /api/esim/tokens"
+      ],
+      "databaseOwnership": "Hardware HSM Key Store + eUICC Profile Registry",
+      "tenantScope": "Cryptographically isolated per-tenant GSMA Certificate Issuer (CI) roots",
+      "userRoles": [
+        "Carrier Integration Engineer",
+        "Customer Security Administrator",
+        "Network Operations Engineer"
+      ],
+      "permissions": [
+        "telecom.esim.generate",
+        "telecom.esim.attest",
+        "telecom.esim.revoke",
+        "telecom.esim.audit"
+      ],
+      "requiredEntitlement": "entitlement.telecom.sgp22_esim",
+      "humanApprovals": [
+        "Bulk eSIM profile batch revocation (>500 profiles)",
+        "Root CI certificate rollover"
+      ],
+      "dependencies": [
+        "GSMA SAS-SM Certified SM-DP+ Server",
+        "Ed25519 & ECDSA P-256 HSM",
+        "ES2+ and ES9+ GSMA Interfaces"
+      ],
+      "observabilityStatus": "HIGH (Cryptographic signature verification logs, token expiry counters, QR validation)",
+      "testCoverage": "60% (Signature generation, verification tests in euiccAttestationService.ts)",
+      "knownSecurityGaps": "Mock keys generated in browser when HSM is offline; QR payload can be decoded client-side",
+      "recommendedRemediation": "Bind profile creation to cloud KMS / hardware security module with strict non-exportable private keys"
+    },
+    {
+      "moduleId": "mod-telecom-satellite-08",
+      "productDivision": "MANDELA TELECOM",
+      "displayName": "Satellite NTN & Orbital Teleport Gateway",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/satellite/SatelliteNtnSuite.tsx",
+        "/src/types/multiTenant.ts"
+      ],
+      "frontEndRoute": "/enterprise/satellite_ntn",
+      "backendService": "3GPP Rel-17 NTN Feeder Controller + Teleport Station Agent",
+      "apiEndpoints": [
+        "GET /api/satellite/telemetry",
+        "POST /api/satellite/beam-steering",
+        "GET /api/satellite/ephemeris",
+        "POST /api/satellite/emergency-beacon"
+      ],
+      "databaseOwnership": "Orbital State Vector Store (Time-series TimescaleDB)",
+      "tenantScope": "Per-operator satellite band lease and geographic beam contours",
+      "userRoles": [
+        "Satellite Operations Engineer",
+        "Network Operations Engineer",
+        "Emergency Broadcast Controller"
+      ],
+      "permissions": [
+        "telecom.satellite.telemetry_read",
+        "telecom.satellite.beam_configure",
+        "telecom.satellite.doppler_calibrate",
+        "telecom.satellite.emergency_override"
+      ],
+      "requiredEntitlement": "entitlement.telecom.satellite_ntn_feeder",
+      "humanApprovals": [
+        "Ephemeris orbit handover parameter changes",
+        "High-power NTN emergency beacon broadcast activation"
+      ],
+      "dependencies": [
+        "14 African Ground Teleports",
+        "LEO Satellite Constellation SGP4 Ephemeris",
+        "3GPP Release 17 gNodeB NTN"
+      ],
+      "observabilityStatus": "HIGH (Azimuth/Elevation gauges, Doppler shift compensation curve, signal budget)",
+      "testCoverage": "30% (Orbital geometry calculations)",
+      "knownSecurityGaps": "Teleport commands lack server-side mTLS attestation; Doppler simulation is computed client-side",
+      "recommendedRemediation": "Require hardware token multi-factor authorization for beam manipulation and teleport link budget changes"
+    },
+    {
+      "moduleId": "mod-secure-identity-09",
+      "productDivision": "MANDELA SECURE",
+      "displayName": "System 16: Sovereign Identity, KYC & Attestation Registry",
+      "currentStatus": "PARTIAL",
+      "sourceLocations": [
+        "/src/components/ComplianceRegistry.tsx",
+        "/src/types/nms.ts (KycProfile, SovereignLicense)",
+        "/src/components/Header.tsx (kycProfile prop)"
+      ],
+      "frontEndRoute": "/enterprise/nms_numbers?tab=compliance",
+      "backendService": "National ID Verification Adapter (NIN Nigeria, Huduma Kenya, Home Affairs SA)",
+      "apiEndpoints": [
+        "POST /v1/identity/verify",
+        "GET /v1/identity/profile/:id",
+        "POST /v1/identity/appeal",
+        "GET /v1/identity/audit"
+      ],
+      "databaseOwnership": "Encrypted Identity Vault (Field-level AES-GCM-256 + HSM)",
+      "tenantScope": "Tenant-isolated verification sessions; zero cross-tenant identity leakage",
+      "userRoles": [
+        "Customer Security Administrator",
+        "Customer Compliance Manager",
+        "Fraud Investigator",
+        "Country Compliance Officer",
+        "Independent Auditor"
+      ],
+      "permissions": [
+        "secure.identity.verify",
+        "secure.identity.review",
+        "secure.identity.appeal",
+        "secure.identity.policy_edit"
+      ],
+      "requiredEntitlement": "entitlement.secure.kyc_verification",
+      "humanApprovals": [
+        "Consequential identity denial appeals",
+        "Manual biometric match exception review",
+        "Country verification provider failover"
+      ],
+      "dependencies": [
+        "National Identity Registries (NIMC Nigeria, IPRS Kenya, DHA South Africa)",
+        "Biometric Liveness Models",
+        "AU Malabo Data Convention"
+      ],
+      "observabilityStatus": "LOW (Embedded in compliance tab; lacks dedicated verification queue)",
+      "testCoverage": "20% (Profile structure checks)",
+      "knownSecurityGaps": "Support operators can view raw ID document numbers without audit logging or purpose-bound tokens; no appeal workflow UI",
+      "recommendedRemediation": "Promote to full standalone Mandela Secure portal with field-level redaction, purpose-bound access, and audited appeals"
+    },
+    {
+      "moduleId": "mod-secure-edge-defense-10",
+      "productDivision": "MANDELA SECURE",
+      "displayName": "Inline Signaling Firewall & Edge Defense Plane",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/edge/EdgeDefenseSuite.tsx",
+        "/src/components/edge/EuiccAttestationMiddlewareView.tsx",
+        "/src/components/edge/ThreatGeospatialView.tsx",
+        "/src/data/mockEdgeDefenseData.ts",
+        "/src/types/multiTenant.ts"
+      ],
+      "frontEndRoute": "/enterprise/edge_defense",
+      "backendService": "eBPF XDP Signaling Scrubber + SS7/Diameter Proxy",
+      "apiEndpoints": [
+        "POST /api/defense/rules",
+        "GET /api/defense/telemetry",
+        "POST /api/defense/mitigate"
+      ],
+      "databaseOwnership": "Threat Intelligence DB & eBPF Map State",
+      "tenantScope": "Multi-Tenant signaling firewall rules with sovereign IXP scrubbing",
+      "userRoles": [
+        "Security Administrator",
+        "SOC Lead",
+        "Carrier Operations Specialist"
+      ],
+      "permissions": [
+        "secure.defense.rules_read",
+        "secure.defense.rules_edit",
+        "secure.defense.mitigate",
+        "secure.defense.packet_drop"
+      ],
+      "requiredEntitlement": "entitlement.secure.signaling_firewall",
+      "humanApprovals": [
+        "Continental carrier route blocklist activation",
+        "BGP FlowSpec scrubbing redirection at tier-1 IXPs"
+      ],
+      "dependencies": [
+        "eBPF Linux Kernel XDP",
+        "GSMA FS.11 / FS.19 Specifications",
+        "STIR/SHAKEN STI-AS"
+      ],
+      "observabilityStatus": "HIGH (Real-time packet scrubbing rates, bypass guardrails, threat maps)",
+      "testCoverage": "40% (Rule builder tests, simulation data)",
+      "knownSecurityGaps": "Bypass guardrails can be modified in UI without secondary approval or separation of duties",
+      "recommendedRemediation": "Enforce two-person authorization rule on all inline packet drop and signaling bypass modifications"
+    },
+    {
+      "moduleId": "mod-secure-soc-c2-11",
+      "productDivision": "MANDELA SECURE",
+      "displayName": "SOC Command & Control (C2) Real-Time UI & Threat Matrix",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/edge/SocC2Suite.tsx",
+        "/src/components/edge/AiAnomalyVoiceSuite.tsx",
+        "/src/components/edge/SiemFabricSuite.tsx",
+        "/src/data/mockSocC2Data.ts",
+        "/src/data/mockAiFraudData.ts",
+        "/src/data/mockSiemFabricData.ts"
+      ],
+      "frontEndRoute": "/enterprise/soc_c2",
+      "backendService": "Apache Flink CEP Engine + Real-time Incident Bus",
+      "apiEndpoints": [
+        "GET /api/soc/threats",
+        "POST /api/soc/quarantine-simswap",
+        "POST /api/soc/playbook/trigger",
+        "GET /api/soc/entity-graph"
+      ],
+      "databaseOwnership": "Graph Database (Neo4j / OpenSearch SIEM Index)",
+      "tenantScope": "Strict tenant isolation with cross-tenant anonymized threat telemetry",
+      "userRoles": [
+        "SOC Lead",
+        "Incident Commander",
+        "Fraud Investigator",
+        "Country Compliance Officer"
+      ],
+      "permissions": [
+        "secure.soc.read",
+        "secure.soc.isolate_subscriber",
+        "secure.soc.execute_playbook",
+        "secure.soc.export_forensics"
+      ],
+      "requiredEntitlement": "entitlement.secure.soc_c2_advanced",
+      "humanApprovals": [
+        "SIM-swap network quarantine lockdown affecting active subscriber",
+        "Automated law enforcement forensic package export"
+      ],
+      "dependencies": [
+        "Apache Flink 15-min State Windows",
+        "RawNet3 Voice Deepfake Acoustic Scanner",
+        "Geodesic Velocity Engine"
+      ],
+      "observabilityStatus": "HIGH (Entity graph visualizer, acoustic spectrograms, live threat matrices)",
+      "testCoverage": "42% (Playbook triggers, threat card renders)",
+      "knownSecurityGaps": "SIM-swap quarantine button executes immediately without peer verification; no rollback log",
+      "recommendedRemediation": "Add peer approval modal for subscriber isolation and write immutable audit event to Dataverse"
+    },
+    {
+      "moduleId": "mod-cloud-dataverse-12",
+      "productDivision": "MANDELA CLOUD",
+      "displayName": "MANDELA Sovereign Dataverse & Lakehouse Fabric",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/dataverse/DataverseOverview.tsx",
+        "/src/components/dataverse/SchemaDesigner.tsx",
+        "/src/components/dataverse/RecordExplorer.tsx",
+        "/src/components/dataverse/QueryStudio.tsx",
+        "/src/components/dataverse/EventPipeline.tsx",
+        "/src/components/dataverse/GovernanceRbac.tsx",
+        "/src/components/dataverse/AiDataService.tsx",
+        "/src/types/dataverse.ts",
+        "/src/data/mockDataverseData.ts"
+      ],
+      "frontEndRoute": "/enterprise/dataverse",
+      "backendService": "PostgreSQL Multi-Tenant Schema Engine + Kafka CDC Pipeline",
+      "apiEndpoints": [
+        "GET /api/dataverse/schemas",
+        "POST /api/dataverse/schemas",
+        "GET /api/dataverse/records",
+        "POST /api/dataverse/records",
+        "POST /api/dataverse/query",
+        "GET /api/dataverse/events"
+      ],
+      "databaseOwnership": "PostgreSQL Relational + Apache Iceberg Tiered Lakehouse",
+      "tenantScope": "Dedicated keyspace or logical schema isolation with in-country residency tags",
+      "userRoles": [
+        "Cloud Organization Owner",
+        "Cloud Administrator",
+        "Cloud Developer",
+        "Independent Auditor"
+      ],
+      "permissions": [
+        "cloud.dataverse.schema_edit",
+        "cloud.dataverse.record_query",
+        "cloud.dataverse.cdc_subscribe",
+        "cloud.dataverse.audit_read"
+      ],
+      "requiredEntitlement": "entitlement.cloud.sovereign_dataverse",
+      "humanApprovals": [
+        "Schema destruction or non-backward-compatible migration",
+        "Cross-jurisdiction data export request"
+      ],
+      "dependencies": [
+        "PostgreSQL 16",
+        "Kafka CDC Debezium",
+        "SHA-256 Tamper-Evident Ledger"
+      ],
+      "observabilityStatus": "HIGH (Storage quotas, record counters, SHA-256 hash verifications)",
+      "testCoverage": "55% (Schema creation, field additions, query execution)",
+      "knownSecurityGaps": "Query Studio runs unconstrained client queries without server-side AST sanitization; potential SQL injection",
+      "recommendedRemediation": "Implement server-side SQL parser with strict read-only AST white-listing and row-level tenant filters"
+    },
+    {
+      "moduleId": "mod-cloud-infrastructure-13",
+      "productDivision": "MANDELA CLOUD",
+      "displayName": "Cloud Compute, Storage & Regional Capacity Fabric",
+      "currentStatus": "PARTIAL",
+      "sourceLocations": [
+        "/src/components/sbc/SbcNocDashboard.tsx (PoP compute/capacity indicators)",
+        "/src/components/customer/CustomerPortalView.tsx (Storage/Compute usage bars)",
+        "/src/types/multiTenant.ts (TenantAccount limits & usage)"
+      ],
+      "frontEndRoute": "/customer/overview",
+      "backendService": "Kubernetes / Bare Metal Telemetry Agent (Simulated)",
+      "apiEndpoints": [
+        "GET /api/cloud/capacity",
+        "POST /api/cloud/scale",
+        "GET /api/cloud/quotas"
+      ],
+      "databaseOwnership": "Infrastructure Asset DB & Prometheus TSDB",
+      "tenantScope": "Regional PoP resource allocation (Nairobi, Lagos, Cape Town, Cairo, Dakar)",
+      "userRoles": [
+        "Cloud Organization Owner",
+        "Cloud Operations Engineer",
+        "Platform Reliability Engineer"
+      ],
+      "permissions": [
+        "cloud.compute.read",
+        "cloud.compute.scale",
+        "cloud.storage.allocate",
+        "cloud.quota.manage"
+      ],
+      "requiredEntitlement": "entitlement.cloud.infrastructure_fleet",
+      "humanApprovals": [
+        "Production cluster destruction",
+        "Continental capacity rebalancing > $50,000/mo"
+      ],
+      "dependencies": [
+        "Equinix / Teraco / Raxio African Data Centers",
+        "Kubernetes Control Plane",
+        "Prometheus/Grafana Telemetry"
+      ],
+      "observabilityStatus": "PARTIAL (Represented as PoP load bars and tenant storage metrics)",
+      "testCoverage": "25% (Metric rendering)",
+      "knownSecurityGaps": "Lacks dedicated cloud infrastructure management UI; controls are scattered inside SBC and Customer views",
+      "recommendedRemediation": "Create dedicated Mandela Cloud workspace in Operations and Engineering portals with formal quota provisioning"
+    },
+    {
+      "moduleId": "mod-intel-nmcp-14",
+      "productDivision": "MANDELA INTELLIGENCE",
+      "displayName": "NMCP Multi-Tenant AI Situational Reasoning Engine",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/nmcp/NmcpControlPlaneModal.tsx",
+        "/src/components/nmcp/NmcpControlPlaneView.tsx",
+        "/src/services/nmcpContextService.ts",
+        "/server.ts (/api/nmcp/reason)"
+      ],
+      "frontEndRoute": "/nmcp-control-plane",
+      "backendService": "Express server.ts + Google Gemini 3.8 Flash SDK (@google/genai)",
+      "apiEndpoints": [
+        "POST /api/nmcp/reason"
+      ],
+      "databaseOwnership": "AI Insight Ledger & Cross-Layer Cache (Redis)",
+      "tenantScope": "Cross-layer contextual analysis filtered by requested tenant ID or global cluster",
+      "userRoles": [
+        "Network Controller",
+        "Incident Commander",
+        "AI Workflow Administrator",
+        "Chief Technology Officer"
+      ],
+      "permissions": [
+        "intel.nmcp.read",
+        "intel.nmcp.reason",
+        "intel.nmcp.execute_action"
+      ],
+      "requiredEntitlement": "entitlement.intel.autonomous_control_plane",
+      "humanApprovals": [
+        "Automated execution of AI-recommended remediation actions",
+        "Cross-layer traffic rerouting"
+      ],
+      "dependencies": [
+        "@google/genai SDK",
+        "Gemini 3.8 Flash / Gemini 4 Argon",
+        "Server-side proxy with fallback to gemini-3.1-flash-lite"
+      ],
+      "observabilityStatus": "HIGH (Model response latencyMs, confidence scores, structured JSON validation)",
+      "testCoverage": "70% (Resilient fallback tests, snapshot aggregation unit tests)",
+      "knownSecurityGaps": "Client can prompt AI without server-side tenant validation check; AI output could propose unauthorized commands",
+      "recommendedRemediation": "Validate caller's session token and tenant boundaries server-side before passing snapshot to Gemini; enforce human confirmation for all recommended actions"
+    },
+    {
+      "moduleId": "mod-intel-copilot-15",
+      "productDivision": "MANDELA INTELLIGENCE",
+      "displayName": "Gemini Multi-Turn AI Telecom Copilot",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/chat/GeminiChatbotModal.tsx",
+        "/src/components/chat/GeminiChatbotView.tsx",
+        "/src/services/geminiChatService.ts",
+        "/server.ts (/api/chat)"
+      ],
+      "frontEndRoute": "/copilot (Floating modal across all views)",
+      "backendService": "Express server.ts + @google/genai SDK",
+      "apiEndpoints": [
+        "POST /api/chat"
+      ],
+      "databaseOwnership": "Conversation Session Store (Client session / ephemeral)",
+      "tenantScope": "Active tenant context injected into system instructions",
+      "userRoles": [
+        "Customer AI Operator",
+        "Communications Developer",
+        "Network Operations Engineer",
+        "Security Reviewer"
+      ],
+      "permissions": [
+        "intel.chat.interact",
+        "intel.chat.code_assist",
+        "intel.chat.telecom_diagnostics"
+      ],
+      "requiredEntitlement": "entitlement.intel.gemini_copilot",
+      "humanApprovals": [
+        "None (Read-only advisory chat; cannot execute mutations directly)"
+      ],
+      "dependencies": [
+        "@google/genai SDK",
+        "Server-side GEMINI_API_KEY",
+        "Model fallback ladder (3.8-flash -> 3.1-flash-lite)"
+      ],
+      "observabilityStatus": "HIGH (Latency tracking, token counters, error fallback logs)",
+      "testCoverage": "65% (Chat rendering, model fallback handling)",
+      "knownSecurityGaps": "Chat session history not persisted securely; user prompts could contain PII without client warning",
+      "recommendedRemediation": "Add client-side PII scrubbing warning and server-side tenant-isolated conversation persistence"
+    },
+    {
+      "moduleId": "mod-platform-tenancy-16",
+      "productDivision": "MANDELA PLATFORM",
+      "displayName": "Multi-Tenant Control Plane & Session Resolution",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/types/multiTenant.ts",
+        "/src/data/mockMultiTenantData.ts",
+        "/src/hooks/useGlobalSessionPersistence.ts",
+        "/src/components/auth/TenantLoginModal.tsx",
+        "/src/components/layout/LeftSidebar.tsx",
+        "/src/components/layout/TopHeader.tsx"
+      ],
+      "frontEndRoute": "/auth/tenant-switch",
+      "backendService": "Session Middleware & LocalStorage Persistence",
+      "apiEndpoints": [
+        "POST /api/auth/session/resolve",
+        "POST /api/tenants/switch",
+        "GET /api/tenants/current"
+      ],
+      "databaseOwnership": "Platform Directory & Membership DB (PostgreSQL)",
+      "tenantScope": "Foundation for all multi-tenant isolation across all 12 modules",
+      "userRoles": [
+        "All Personas (Novice, Developer, Enterprise, NOC Ops)",
+        "Root Administrator"
+      ],
+      "permissions": [
+        "platform.tenant.switch",
+        "platform.tenant.read",
+        "platform.tenant.configure"
+      ],
+      "requiredEntitlement": "free_tier",
+      "humanApprovals": [
+        "New tenant organizational onboarding approval",
+        "Elevation to Root Administrator"
+      ],
+      "dependencies": [
+        "LocalStorage Web API",
+        "React State Management",
+        "Workbox Service Worker"
+      ],
+      "observabilityStatus": "MODERATE (Session persistence logs, state restore triggers)",
+      "testCoverage": "55% (Persistence parser tests, tenant switcher tests)",
+      "knownSecurityGaps": "Tenant switching is currently performed client-side without backend session re-authentication or JWT exchange",
+      "recommendedRemediation": "Implement server-side JWT with scoped tenant_id claim, validating organization membership on every request"
+    },
+    {
+      "moduleId": "mod-platform-billing-17",
+      "productDivision": "MANDELA PLATFORM",
+      "displayName": "Unified Subscriptions, Paywalls & Metered Billing",
+      "currentStatus": "EXISTING",
+      "sourceLocations": [
+        "/src/components/customer/CustomerPortalView.tsx (Billing & Invoices tab)",
+        "/src/components/common/SubscriptionGatedBanner.tsx",
+        "/src/data/mockMultiTenantData.ts (SUBSCRIPTION_TIERS)",
+        "/src/types/multiTenant.ts (SubscriptionPlanDetails)"
+      ],
+      "frontEndRoute": "/customer/billing",
+      "backendService": "Billing Engine & Metering Aggregator (Stripe/Flutterwave simulation)",
+      "apiEndpoints": [
+        "POST /api/billing/upgrade",
+        "POST /api/billing/topup",
+        "GET /api/billing/invoices",
+        "GET /api/billing/usage"
+      ],
+      "databaseOwnership": "Billing & Ledger DB (PostgreSQL / Stripe Connect)",
+      "tenantScope": "Strict per-tenant billing isolation, invoice history, and credit wallets",
+      "userRoles": [
+        "Customer Owner",
+        "Read-Only Billing Analyst",
+        "Platform Administrator"
+      ],
+      "permissions": [
+        "platform.billing.read",
+        "platform.billing.upgrade",
+        "platform.billing.topup",
+        "platform.billing.invoice_download"
+      ],
+      "requiredEntitlement": "free_tier",
+      "humanApprovals": [
+        "Custom enterprise invoice billing terms (> $25,000)",
+        "Post-paid credit limit extension"
+      ],
+      "dependencies": [
+        "Stripe API / Flutterwave Pan-African Rails",
+        "Idempotent Usage Metering Bus"
+      ],
+      "observabilityStatus": "MODERATE (Spend meters, invoice download simulators, quota indicators)",
+      "testCoverage": "48% (Plan upgrade tests, credit top-up logic)",
+      "knownSecurityGaps": "Plan upgrades and wallet top-ups update in-memory React state without payment gateway webhook verification",
+      "recommendedRemediation": "Implement signed webhook verification from payment processors (Stripe/Flutterwave) before mutating tenant tier"
+    },
+    {
+      "moduleId": "mod-platform-workflows-18",
+      "productDivision": "MANDELA PLATFORM",
+      "displayName": "Human-in-the-Loop Workflow Orchestration & Approval Center",
+      "currentStatus": "PARTIAL",
+      "sourceLocations": [
+        "/src/components/stress/UxArchitectureWalkthrough.tsx",
+        "/src/components/common/StressTestRunnerModal.tsx",
+        "/src/components/dataverse/GovernanceRbac.tsx"
+      ],
+      "frontEndRoute": "/governance/approval-center",
+      "backendService": "Workflow State Machine Engine (Temporal.io / Camunda pattern)",
+      "apiEndpoints": [
+        "POST /api/workflows/submit",
+        "GET /api/workflows/pending",
+        "POST /api/workflows/:id/approve",
+        "POST /api/workflows/:id/reject",
+        "POST /api/workflows/:id/escalate"
+      ],
+      "databaseOwnership": "Workflow Engine DB (Audit & State transition logs)",
+      "tenantScope": "Tenant-scoped workflows with platform administrative escalation paths",
+      "userRoles": [
+        "Security Policy Approver",
+        "Regulatory Approver",
+        "Infrastructure Approver",
+        "Operations Analyst"
+      ],
+      "permissions": [
+        "platform.workflow.submit",
+        "platform.workflow.review",
+        "platform.workflow.approve",
+        "platform.workflow.audit"
+      ],
+      "requiredEntitlement": "entitlement.platform.hitl_workflows",
+      "humanApprovals": [
+        "Self-approval explicitly prohibited for high-risk actions (Separation of Duties)"
+      ],
+      "dependencies": [
+        "Temporal.io / BPMN Workflow Engine",
+        "Audit Log Signature Service"
+      ],
+      "observabilityStatus": "LOW (Present in stress test walkthrough and Dataverse RBAC, but lacks centralized unified approval inbox)",
+      "testCoverage": "30% (Walkthrough simulation)",
+      "knownSecurityGaps": "Approval requests exist across disconnected component modals without a central queue or cryptographic signatures",
+      "recommendedRemediation": "Construct unified Approval Center inbox in Operations, Security, and Admin portals enforcing separation of duties"
+    }
+  ]
+}
